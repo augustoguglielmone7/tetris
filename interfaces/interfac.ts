@@ -1,5 +1,5 @@
     export interface IRotator {
-        rotateleft(): void;
-        rotateright(): void;
+        rotateLeft(): void;
+        rotateRight(): void;
         
     }
