@@ -1,0 +1,1 @@
+public piece class Piecedog extends Piece implements IRotator 
