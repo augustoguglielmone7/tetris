@@ -1,9 +1,10 @@
-import {Piecebase}Piee";
+import { PieceBase } from "./Piecebase";
 
-export class PieceL extends Piecebase {
+export class PieceL extends PieceBase {
     constructor (){
      super("Piecel", [
-           { row: 0, column: 1 },
+         [      
+               { row: 0, column: 1 },
                 { row: 0, column: 2 },
                 { row: 1, column: 0 },
                 { row: 1, column: 1 }
@@ -22,4 +23,4 @@ export class PieceL extends Piecebase {
 
 
 
-    )
+    

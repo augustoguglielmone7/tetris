@@ -17,12 +17,12 @@ export abstract class PieceBase
     this.orientationIndex = 0;
  }
 
- public get currentOrientation(): Cell[] {
-    return this.orientations[this.orientationIndex].map(Cell => ({
-        row: Cell.row,
-        column: Cell.column
-     }));
- }
+public getCells(): Cell[] {
+    return this.orientations[this.orientationIndex].map(cell => ({
+        row: cell.row,
+        column: cell.column
+    }));
+}
  public rotateLeft(): void {
     this.orientationIndex = (this.orientationIndex + 1 ) % this.orientations.length;
  }
