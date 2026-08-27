@@ -1,0 +1,33 @@
+import {PieceBase} from "./Piecebase";
+
+export class Piecet extends PieceBase {
+    constructor() {
+        super("TPiece", [
+            [
+                { row: 0, column: 1 },
+                { row: 1, column: 0 },
+                { row: 1, column: 1 },
+                { row: 1, column: 2 }
+            ],
+            [
+                { row: 0, column: 1 },
+                { row: 1, column: 0 },
+                { row: 1, column: 1 },
+                { row: 2, column: 1 }
+            ],
+            [
+                { row: 1, column: 0 },
+                { row: 1, column: 1 },
+                { row: 1, column: 2 },
+                { row: 2, column: 1 }
+
+            ],
+            [
+                { row: 0, column: 1 },
+                { row: 1, column: 1 },
+                { row: 1, column: 2 },
+                { row: 2, column: 1 }
+            ]
+        ]);
+    }
+}
