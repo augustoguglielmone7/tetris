@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 import { PieceBase } from '../Piece/Piecebase';
 
 class TestPiece extends PieceBase {
@@ -17,7 +17,7 @@ class TestPiece extends PieceBase {
 }
 
 describe('PieceBase', () => {
-    it('debe devolver las celdas de la orientación inicial', () => {
+    test('debe devolver las celdas de la orientación inicial', () => {
         const piece = new TestPiece();
 
         expect(piece.getCells()).toEqual([
@@ -26,7 +26,7 @@ describe('PieceBase', () => {
         ]);
     });
 });
-it('debe cambiar de orientación al rotar a la izquierda', () => {
+test('debe cambiar de orientación al rotar a la izquierda', () => {
     const piece = new TestPiece();
 
     piece.rotateLeft();
@@ -36,7 +36,7 @@ it('debe cambiar de orientación al rotar a la izquierda', () => {
         { row: 1, column: 0 }
     ]);
 });
-it('debe cambiar de orientación al rotar a la derecha', () => {
+test('debe cambiar de orientación al rotar a la derecha', () => {
     const piece = new TestPiece();
 
     piece.rotateRight();
