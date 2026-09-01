@@ -1,4 +1,6 @@
 import { Piecestick } from '../Piece/Piecestick';
+import { describe, it, expect } from 'vitest';
+
 describe ('Piecestick Test', () => {
     it('debe crear una pieza I correctamente y tener 4 elementos', () => {      
     const piecestick = new Piecestick();

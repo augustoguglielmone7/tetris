@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { Piecet } from '../Piece/Piecet';
 describe('Piecet Test', () => {
     it('debe crear una pieza T correctamente y tener 4 elementos', () => {
@@ -7,7 +8,7 @@ describe('Piecet Test', () => {
     });
 
     it('la pieza T debe poder rotar a izquierda y derecha', () => {
-        const pieceT = new Piecet();
+        const pieceT = new Piecet(); 
         
         expect(typeof pieceT.rotateLeft).toBe('function');
         expect(typeof pieceT.rotateRight).toBe('function');
