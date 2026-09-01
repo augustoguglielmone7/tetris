@@ -43,5 +43,53 @@ describe("Board", () => {
             column: 5
         })).toBe(false);
     });
+    test("una celda ocupada puede ser liberada", () => {
+        const board = new Board();
 
+        board.occupyCell({
+            row: 5,
+            column: 5
+        });
+
+        board.clearCell({
+            row: 5,
+            column: 5
+        });
+
+        expect(board.isOccupied({
+            row: 5,
+            column: 5
+        })).toBe(false);
+    });
+
+    test("el tablero debe tener un ancho de 10 columnas por defecto", () => {
+        const board = new Board();
+
+        expect(board.getWidth()).toBe(10);
+    });
+
+    test("el tablero debe tener un alto de 20 filas por defecto", () => {
+        const board = new Board();
+
+        expect(board.getHeight()).toBe(20);
+    });
+
+    test("debe devolver las celdas ocupadas", () => {
+        const board = new Board();
+
+        board.occupyCell({
+            row: 5,
+            column: 5
+        });
+
+        board.occupyCell({
+            row: 6,
+            column: 5
+        });
+
+        expect(board.getOccupiedCells()).toEqual([
+            { row: 5, column: 5 },
+            { row: 6, column: 5 }
+        ]);
+    });
 });
