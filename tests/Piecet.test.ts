@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { Piecet } from '../Piece/Piecet';
 describe('Piecet Test', () => {
     it('debe crear una pieza T correctamente y tener 4 elementos', () => {
