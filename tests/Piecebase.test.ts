@@ -36,3 +36,13 @@ it('debe cambiar de orientación al rotar a la izquierda', () => {
         { row: 1, column: 0 }
     ]);
 });
+it('debe cambiar de orientación al rotar a la derecha', () => {
+    const piece = new TestPiece();
+
+    piece.rotateRight();
+
+    expect(piece.getCells()).toEqual([
+        { row: 0, column: 0 },
+        { row: 1, column: 0 }
+    ]);
+});
