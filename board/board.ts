@@ -57,40 +57,28 @@ export class Board {
     }
         // Comprueba si una fila está completa
     public isRowFull(row: number): boolean {
-        for (let column = 0; column < this.width; column++) {
-            if (!this.isOccupied({ row, column })) {
-                return false;
-            }
-        }
-
-        return true;
+        return Array.from({ length: this.width }, (_, column) => column)
+            .every(column => this.isOccupied({ row, column }));
     }
 
-    // Elimina todas las filas completas
+    // Elimina todas las filas completas y baja las de arriba
     public clearFullRows(): void {
-    const newOccupiedCells = new Set<string>();
+        const fullRows = new Set(
+            Array.from({ length: this.height }, (_, row) => row)
+                .filter(row => this.isRowFull(row))
+        );
 
-    for (const cell of this.getOccupiedCells()) {
-        if (!this.isRowFull(cell.row)) {
-            newOccupiedCells.add(`${cell.row},${cell.column}`);
-        }
+        const newOccupiedCells = new Set<string>();
+
+        this.getOccupiedCells()
+            .filter(cell => !fullRows.has(cell.row))
+            .forEach(cell => {
+                const rowsBelow = Array.from(fullRows)
+                    .filter(fullRow => fullRow < cell.row).length;
+
+                newOccupiedCells.add(`${cell.row - rowsBelow},${cell.column}`);
+            });
+
+        this.occupiedCells = newOccupiedCells;
     }
-
-    let rowsToDrop = 0;
-
-    for (let row = 0; row < this.height; row++) {
-        if (this.isRowFull(row)) {
-            rowsToDrop++;
-        } else if (rowsToDrop > 0) {
-            for (let column = 0; column < this.width; column++) {
-                if (newOccupiedCells.has(`${row},${column}`)) {
-                    newOccupiedCells.delete(`${row},${column}`);
-                    newOccupiedCells.add(`${row - rowsToDrop},${column}`);
-                }
-            }
-        }
-    }
-
-    this.occupiedCells = newOccupiedCells;
-}
 }
