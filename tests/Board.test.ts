@@ -21,4 +21,27 @@ describe("Board", () => {
         })).toBe(false);
     });
 
+    test("una celda puede ser marcada como ocupada", () => {
+        const board = new Board();
+
+        board.occupyCell({
+            row: 5,
+            column: 5
+        });
+
+        expect(board.isOccupied({
+            row: 5,
+            column: 5
+        })).toBe(true);
+    });
+
+    test("una celda que no fue ocupada debe estar libre", () => {
+        const board = new Board();
+
+        expect(board.isOccupied({
+            row: 5,
+            column: 5
+        })).toBe(false);
+    });
+
 });
