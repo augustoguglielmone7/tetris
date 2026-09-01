@@ -32,4 +32,27 @@ export class Board {
     public isOccupied(cell: Cell): boolean {
         return this.occupiedCells.has(`${cell.row},${cell.column}`);
     }
+
+    // Libera una celda ocupada
+    public clearCell(cell: Cell): void {
+        this.occupiedCells.delete(`${cell.row},${cell.column}`);
+    }
+
+    // Devuelve el ancho del tablero
+    public getWidth(): number {
+        return this.width;
+    }
+
+    // Devuelve el alto del tablero
+    public getHeight(): number {
+        return this.height;
+    }
+
+    // Devuelve todas las celdas ocupadas
+    public getOccupiedCells(): Cell[] {
+        return Array.from(this.occupiedCells).map(cell => {
+            const [row, column] = cell.split(",").map(Number);
+            return { row, column };
+        });
+    }
 }
