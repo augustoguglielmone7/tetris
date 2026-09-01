@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/augustoguglielmone7/tetris#readme",
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "vitest": "^4.1.11"
   }
 }
