@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { Board } from "../Board/Board";
+import { Board } from "../board/Board";
 
 describe("Board", () => {
 
