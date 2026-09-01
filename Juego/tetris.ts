@@ -42,12 +42,40 @@ export class Tetris {
         this.currentPiecePosition = { row: 0, column: 4 };
     }
 
+    private canMove(deltaRow: number, deltaCol: number): boolean {
+        return !!this.currentPiece && this.currentPiece.getCells().every((cell) => {
+            const nextRow = this.currentPiecePosition.row + cell.row + deltaRow;
+            const nextCol = this.currentPiecePosition.column + cell.column + deltaCol;
+            const withinColumns = nextCol >= 0 && nextCol < this.board.getWidth();
+            const withinRows = nextRow < this.board.getHeight();
+            const isFree = nextRow < 0 || !this.board.isOccupied({ row: nextRow, column: nextCol });
+
+            return withinColumns && withinRows && isFree;
+        });
+    }
+
+    private lockCurrentPiece(): void {
+        const hasPiece = !!this.currentPiece;
+
+        hasPiece && this.currentPiece?.getCells().forEach((cell) => {
+            const row = this.currentPiecePosition.row + cell.row;
+            const column = this.currentPiecePosition.column + cell.column;
+            const insideBoard = row >= 0 && row < this.board.getHeight() &&
+                column >= 0 && column < this.board.getWidth();
+
+            insideBoard && this.board.occupyCell({ row, column });
+        });
+
+        hasPiece && this.board.clearFullRows();
+    }
+
     public tick(): void {
         !this.currentPiece && this.spawnPiece();
-        this.currentPiece && (this.currentPiecePosition = {
+        this.currentPiece && this.canMove(1, 0) && (this.currentPiecePosition = {
             row: this.currentPiecePosition.row + 1,
             column: this.currentPiecePosition.column
         });
+        this.currentPiece && !this.canMove(1, 0) && (this.lockCurrentPiece(), this.spawnPiece());
     }
 
     public getBoard(): Board {
