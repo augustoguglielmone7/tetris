@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { Board } from "../board/Board";
+import { Board } from "../board/board";
 
 describe("Board", () => {
 
@@ -43,5 +43,118 @@ describe("Board", () => {
             column: 5
         })).toBe(false);
     });
+    test("una celda ocupada puede ser liberada", () => {
+        const board = new Board();
 
+        board.occupyCell({
+            row: 5,
+            column: 5
+        });
+
+        board.clearCell({
+            row: 5,
+            column: 5
+        });
+
+        expect(board.isOccupied({
+            row: 5,
+            column: 5
+        })).toBe(false);
+    });
+
+    test("el tablero debe tener un ancho de 10 columnas por defecto", () => {
+        const board = new Board();
+
+        expect(board.getWidth()).toBe(10);
+    });
+
+    test("el tablero debe tener un alto de 20 filas por defecto", () => {
+        const board = new Board();
+
+        expect(board.getHeight()).toBe(20);
+    });
+
+    test("debe devolver las celdas ocupadas", () => {
+        const board = new Board();
+
+        board.occupyCell({
+            row: 5,
+            column: 5
+        });
+
+        board.occupyCell({
+            row: 6,
+            column: 5
+        });
+
+        expect(board.getOccupiedCells()).toEqual([
+            { row: 5, column: 5 },
+            { row: 6, column: 5 }
+        ]);
+    });
+        test("una fila completa debe ser detectada", () => {
+        const board = new Board();
+
+        for (let column = 0; column < board.getWidth(); column++) {
+            board.occupyCell({
+                row: 0,
+                column
+            });
+        }
+
+        expect(board.isRowFull(0)).toBe(true);
+    });
+
+    test("una fila incompleta no debe ser detectada como completa", () => {
+        const board = new Board();
+
+        for (let column = 0; column < board.getWidth() - 1; column++) {
+            board.occupyCell({
+                row: 0,
+                column
+            });
+        }
+
+        expect(board.isRowFull(0)).toBe(false);
+    });
+
+    test("debe eliminar una fila completa", () => {
+        const board = new Board();
+
+        for (let column = 0; column < board.getWidth(); column++) {
+            board.occupyCell({
+                row: 0,
+                column
+            });
+        }
+
+        board.clearFullRows();
+
+        expect(board.isRowFull(0)).toBe(false);
+        expect(board.getOccupiedCells()).toEqual([]);
+    });
+        test("las filas superiores deben bajar al eliminar una fila completa", () => {
+        const board = new Board();
+
+        // Completar la fila 0
+        for (let column = 0; column < board.getWidth(); column++) {
+            board.occupyCell({
+                row: 0,
+                column
+            });
+        }
+
+        // Una celda en la fila de arriba
+        board.occupyCell({
+            row: 1,
+            column: 3
+        });
+
+        board.clearFullRows();
+
+        expect(board.isOccupied({
+            row: 0,
+            column: 3
+        })).toBe(true);
+    });
 });
