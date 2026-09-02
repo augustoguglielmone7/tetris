@@ -1,137 +1,139 @@
-import { Board } from "../board/board";
+import { Board, type ActivePiece as BoardActivePiece, type Position } from "../board/board";
+import { ITetrisState, TetrisStateName } from "../interfaces/ITetrisState";
+import { NotStartedState } from "../Juego/Notstartstate";
 import { Clock } from "./Clock";
-import { Cell } from "../interfaces/interfac";
-import { PieceBase } from "../Piece/Piecebase";
-import { PieceDog } from "../Piece/Piecedog";
-import { PieceL } from "../Piece/PieceL";
-import { Piecestick } from "../Piece/Piecestick";
-import { Piecet } from "../Piece/Piecet";
-import { PieceSquare } from "../Piece/Piecesquare";
+import { PieceGenerator, type PieceFactory } from "../Juego/piecegenerator";
+import { MathRandomSource, type RandomSource } from "../Juego/randomsource";
 
-// Lista de piezas disponibles (array simple, no es una matriz del tablero)
-const PIECE_TYPES: Array<new () => PieceBase> = [
-    PieceDog,
-    PieceL,
-    Piecestick,
-    Piecet,
-    PieceSquare
-];
+export type PiecePosition = Position;
+
+export type { PieceFactory } from "./piecegenerator";
+
+export type ActivePiece = BoardActivePiece;
 
 export class Tetris {
-    private board: Board;
-    private clock: Clock;
-    private isGameOver: boolean = false;
+    private readonly board: Board;
+    private readonly clock: Clock;
+    private readonly pieceGenerator: PieceGenerator;
+    private readonly targetLines: number;
+    private state: ITetrisState;
+    private currentPiece: ActivePiece | null = null;
     private linesCleared: number = 0;
 
-    private currentPiece: PieceBase;
-    private currentOffset: Cell;
-
-    constructor(width: number = 10, height: number = 20) {
-        this.board = new Board(width, height);
+    constructor(
+        pieceFactory: PieceFactory,
+        targetLines: number = Infinity,
+        randomSource: RandomSource = new MathRandomSource()
+    ) {
+        this.board = new Board();
         this.clock = new Clock(() => this.tick(), 1000);
-
-        this.currentPiece = this.createRandomPiece();
-        this.currentOffset = this.getSpawnOffset();
+        this.pieceGenerator = new PieceGenerator(randomSource, pieceFactory);
+        this.targetLines = targetLines;
+        this.state = new NotStartedState();
     }
 
     public start(): void {
-        !this.isGameOver && this.clock.start();
+        this.state.start(this);
     }
 
-    public pause(): void {
-        this.clock.pause();
-    }
-
-    // Avanza un paso del juego: cae la pieza o se fija y se genera la siguiente
     public tick(): void {
-        const moved = !this.isGameOver && this.moveDown();
-        !moved && !this.isGameOver && this.lockCurrentPiece();
+        this.state.tick(this);
+    }
+
+    public moveLeft(): boolean {
+        return this.state.moveLeft(this);
+    }
+
+    public moveRight(): boolean {
+        return this.state.moveRight(this);
+    }
+
+    public rotateLeft(): boolean {
+        return this.state.rotateLeft(this);
+    }
+
+    public rotateRight(): boolean {
+        return this.state.rotateRight(this);
     }
 
     public getBoard(): Board {
         return this.board;
     }
 
-    public getCurrentPiece(): PieceBase {
-        return this.currentPiece;
+    public getClock(): Clock {
+        return this.clock;
     }
 
-    public getCurrentOffset(): Cell {
-        return { ...this.currentOffset };
+    public getStateName(): TetrisStateName {
+        return this.state.name;
     }
 
-    public getIsGameOver(): boolean {
-        return this.isGameOver;
-    }
-    public getLinesCleared(): number {
-    return this.linesCleared;
-}
-
-    // Celdas de la pieza activa ya traducidas a coordenadas del tablero
-    public getAbsoluteCells(): Cell[] {
-        return this.currentPiece.getCells().map(cell => ({
-            row: cell.row + this.currentOffset.row,
-            column: cell.column + this.currentOffset.column
-        }));
+    public getCurrentPiecePosition(): PiecePosition | null {
+    return this.currentPiece?.position ?? null;
     }
 
-    public moveDown(): boolean {
-        return this.tryMove({ row: this.currentOffset.row + 1, column: this.currentOffset.column });
+    public getCurrentPieceCells(): PiecePosition[] {
+    const active = this.currentPiece!;
+
+    return active.piece.getCells().map(cell => ({
+        row: cell.row + active.position.row,
+        column: cell.column + active.position.column
+    }));
     }
 
-    public moveLeft(): boolean {
-        return this.tryMove({ row: this.currentOffset.row, column: this.currentOffset.column - 1 });
+    // A partir de aca: metodos usados por los estados (NotStarted/Running/Finished), no son API de juego para el usuario final.
+
+    public setState(state: ITetrisState): void {
+        this.state = state;
     }
 
-    public moveRight(): boolean {
-        return this.tryMove({ row: this.currentOffset.row, column: this.currentOffset.column + 1 });
+   public getCurrentPiece(): ActivePiece | null {
+    return this.currentPiece;
     }
 
-    // Rota especulativamente y revierte si la nueva forma no entra
-    public rotate(): void {
-        this.currentPiece.rotateLeft();
-        const valid = this.canPlace(this.getAbsoluteCells());
-        !valid && this.currentPiece.rotateRight();
+    public setCurrentPiece(activePiece: ActivePiece | null): void {
+    this.currentPiece = activePiece;
+    } 
+
+   public startClock(): void {
+    this.clock.start();
+    } 
+
+   public pauseClock(): void {
+    this.clock.pause();
     }
 
-    // Intenta mover la pieza activa al nuevo offset; devuelve si pudo moverse
-    private tryMove(newOffset: Cell): boolean {
-        const cells = this.currentPiece.getCells().map(cell => ({
-            row: cell.row + newOffset.row,
-            column: cell.column + newOffset.column
-        }));
+    public trySpawnPiece(): boolean {
+        const activePiece = this.pieceGenerator.next(this.board);
+        const canSpawn = activePiece !== null;
 
-        const valid = this.canPlace(cells);
-        this.currentOffset = valid ? newOffset : this.currentOffset;
+        canSpawn && this.setCurrentPiece(activePiece);
 
-        return valid;
+        return canSpawn;
     }
 
-    // Una posición es válida si todas sus celdas están dentro del tablero y libres
-    private canPlace(cells: Cell[]): boolean {
-        return cells.every(cell => this.board.isInsideBounds(cell) && !this.board.isOccupied(cell));
+    public lockCurrentPiece(): number {
+    const active = this.currentPiece!;
+
+    const cells = active.piece.getCells().map(cell => ({
+        row: cell.row + active.position.row,
+        column: cell.column + active.position.column
+    }));
+
+    this.board.addPiece(cells);
+    this.currentPiece = null;
+
+    const cleared = this.board.clearFullRows();
+    this.linesCleared += cleared;
+
+    return cleared;
     }
 
-    // Fija la pieza actual en el tablero, limpia líneas y genera la próxima
-    private lockCurrentPiece(): void {
-        this.getAbsoluteCells().forEach(cell => this.board.occupyCell(cell));
-        const removedRows = this.board.clearFullRows();
-this.linesCleared += removedRows;
-
-        this.currentPiece = this.createRandomPiece();
-        this.currentOffset = this.getSpawnOffset();
-
-        this.isGameOver = !this.canPlace(this.getAbsoluteCells());
-        this.isGameOver && this.clock.pause();
-        
+    public hasReachedLineTarget(): boolean {
+    return this.linesCleared >= this.targetLines;
     }
 
-    private createRandomPiece(): PieceBase {
-        const PieceClass = PIECE_TYPES[Math.floor(Math.random() * PIECE_TYPES.length)];
-        return new PieceClass();
-    }
-
-    private getSpawnOffset(): Cell {
-        return { row: 0, column: Math.floor(this.board.getWidth() / 2) - 1 };
+    public getClearedLines(): number {
+    return this.linesCleared;   
     }
 }

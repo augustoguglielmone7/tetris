@@ -1,6 +1,10 @@
 import { Cell } from "../interfaces/interfac";
 import { PieceBase } from "../Piece/Piecebase";
 
+export type Position = {
+    row: number;
+    column: number;
+};
 export type ActivePiece = {
     piece: PieceBase;
     position: {
