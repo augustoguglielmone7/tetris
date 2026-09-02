@@ -1,4 +1,4 @@
-
+import { Board, type ActivePiece } from "../board/board";
 import { PieceBase } from "../Piece/Piecebase";
 import {RandomSource} from "../Juego/randomsource";
 export type PieceFactory = () => PieceBase;
@@ -39,14 +39,33 @@ export class PieceGenerator {
             : { piece: _piece, position: { row: SpawnRow, column: _column } };
     }
 
-    private findSpawnCandidates(_board: Board, _piece: PieceBase): SpawnCandidate[] {
-        return Array.from({ length: _piece.getOrientationCount() }, (_value, _orientationIndex) => {
-            const _columns = Array.from({ length: BoardAncho }, (_columnValue, _column) => _column)
-                .filter(_column => _board.canPlacePiece(_piece.getCells(), SpawnRow, _column));
+   private findSpawnCandidates(
+    _board: Board,
+    _piece: PieceBase
+): SpawnCandidate[] {
+
+    return Array.from(
+        { length: _piece.getOrientationCount() },
+        (_value, _orientationIndex) => {
+
+            const _columns = Array.from(
+                { length: _board.width },
+                (_columnValue, _column) => _column
+            )
+            .filter(_column =>
+                _board.canPlacePiece(
+                    _piece.getCells(),
+                    SpawnRow,
+                    _column
+                )
+            );
 
             _piece.rotateLeft();
 
-            return { orientationIndex: _orientationIndex, columns: _columns };
-        }).filter(_candidate => _candidate.columns.length > 0);
-    }
+            return {
+                orientationIndex: _orientationIndex,
+                columns: _columns
+            };
+        }
+    ).filter(_candidate => _candidate.columns.length > 0);
 }

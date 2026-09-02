@@ -23,6 +23,9 @@ public getCells(): Cell[] {
         column: cell.column
     }));
 }
+public getOrientationCount(): number {
+    return this.orientations.length;
+}
  public rotateLeft(): void {
     this.orientationIndex = (this.orientationIndex + 1 ) % this.orientations.length;
  }

@@ -1,5 +1,12 @@
 import { Cell } from "../interfaces/interfac";
 
+export type ActivePiece = {
+    piece: PieceBase;
+    position: {
+        row: number;
+        column: number;
+    };
+};
 export class Board {
     // Define el ancho y alto del tablero
     public readonly width: number;
