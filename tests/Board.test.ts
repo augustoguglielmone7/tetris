@@ -136,24 +136,24 @@ describe("Board", () => {
         test("las filas superiores deben bajar al eliminar una fila completa", () => {
         const board = new Board();
 
-        // Completar la fila 0
+        // Completar la fila inferior
         for (let column = 0; column < board.getWidth(); column++) {
             board.occupyCell({
-                row: 0,
+                row: board.getHeight() - 1,
                 column
             });
         }
 
         // Una celda en la fila de arriba
         board.occupyCell({
-            row: 1,
+            row: board.getHeight() - 2,
             column: 3
         });
 
         board.clearFullRows();
 
         expect(board.isOccupied({
-            row: 0,
+            row: board.getHeight() - 1,
             column: 3
         })).toBe(true);
     });

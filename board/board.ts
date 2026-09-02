@@ -73,10 +73,12 @@ export class Board {
         this.getOccupiedCells()
             .filter(cell => !fullRows.has(cell.row))
             .forEach(cell => {
-                const rowsBelow = Array.from(fullRows)
-                    .filter(fullRow => fullRow < cell.row).length;
+                const clearedRowsBelow = Array.from(fullRows)
+                    .filter(fullRow => fullRow > cell.row).length;
 
-                newOccupiedCells.add(`${cell.row - rowsBelow},${cell.column}`);
+                newOccupiedCells.add(
+                    `${cell.row + clearedRowsBelow},${cell.column}`
+                );
             });
 
         this.occupiedCells = newOccupiedCells;
