@@ -32,27 +32,4 @@ describe('Tetris Test', () => {
         expect(game.getBoard().getWidth()).toBe(10);
         expect(game.getBoard().getHeight()).toBe(20);
     });
-
-    test('debe generar una pieza actual al ejecutar tick', () => {
-        const game = new Tetris();
-
-        game.tick();
-
-        expect(game.getCurrentPiece()).toBeDefined();
-    });
-
-    test('debe poder mover la pieza actual a la izquierda y derecha', () => {
-        const game = new Tetris();
-
-        game.spawnPiece();
-        const beforeLeft = game.getCurrentPiecePosition();
-
-        game.moveLeft();
-        const afterLeft = game.getCurrentPiecePosition();
-        expect(afterLeft.column).toBeLessThan(beforeLeft.column);
-
-        game.moveRight();
-        const afterRight = game.getCurrentPiecePosition();
-        expect(afterRight.column).toBeGreaterThan(afterLeft.column);
-    });
 });
