@@ -14,13 +14,22 @@ describe('Piecet Test', () => {
     ]);
 });
 
-    test('la pieza T debe poder rotar a izquierda y derecha', () => {
-        const pieceT = new Piecet(); 
-        
-        expect(typeof pieceT.rotateLeft).toBe('function');
-        expect(typeof pieceT.rotateRight).toBe('function');
+   test('la pieza T debe rotar a la izquierda y volver a su forma inicial', () => {
+    const pieceT = new Piecet();
 
-        pieceT.rotateLeft();
-        pieceT.rotateRight();
-    });
+    const initialShape = pieceT.getCells();
+
+    pieceT.rotateLeft();
+
+    expect(pieceT.getCells()).toEqual([
+        { row: 0, column: 1 },
+        { row: 1, column: 0 },
+        { row: 1, column: 1 },
+        { row: 2, column: 1 }
+    ]);
+
+    pieceT.rotateRight();
+
+    expect(pieceT.getCells()).toEqual(initialShape);
+});
 });
