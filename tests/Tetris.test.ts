@@ -1,6 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { Tetris } from '../Juego/tetris';
 import { PieceSquare } from '../Piece/Piecesquare';
+import { Piecet } from '../Piece/Piecet';
 
 describe('Tetris Test', () => {
     test('debe instanciarse de forma correcta con un tablero', () => {
@@ -101,5 +102,20 @@ test('debe crear una nueva pieza después de fijar la actual', () => {
         row: 0,
         column: 4
     });
+});
+test('debe rotar la pieza activa cuando hay espacio disponible', () => {
+    const game = new Tetris(10, 20);
+
+    (game as any).currentPiece = new Piecet();
+    (game as any).currentOffset = { row: 0, column: 1 };
+
+    game.rotate();
+
+    expect(game.getAbsoluteCells()).toEqual([
+        { row: 0, column: 2 },
+        { row: 1, column: 1 },
+        { row: 1, column: 2 },
+        { row: 2, column: 2 }
+    ]);
 });
 });
