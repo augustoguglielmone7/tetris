@@ -21,6 +21,7 @@ export class Tetris {
     private board: Board;
     private clock: Clock;
     private isGameOver: boolean = false;
+    private linesCleared: number = 0;
 
     private currentPiece: PieceBase;
     private currentOffset: Cell;
@@ -62,6 +63,9 @@ export class Tetris {
     public getIsGameOver(): boolean {
         return this.isGameOver;
     }
+    public getLinesCleared(): number {
+    return this.linesCleared;
+}
 
     // Celdas de la pieza activa ya traducidas a coordenadas del tablero
     public getAbsoluteCells(): Cell[] {
@@ -111,13 +115,15 @@ export class Tetris {
     // Fija la pieza actual en el tablero, limpia líneas y genera la próxima
     private lockCurrentPiece(): void {
         this.getAbsoluteCells().forEach(cell => this.board.occupyCell(cell));
-        this.board.clearFullRows();
+        const removedRows = this.board.clearFullRows();
+this.linesCleared += removedRows;
 
         this.currentPiece = this.createRandomPiece();
         this.currentOffset = this.getSpawnOffset();
 
         this.isGameOver = !this.canPlace(this.getAbsoluteCells());
         this.isGameOver && this.clock.pause();
+        
     }
 
     private createRandomPiece(): PieceBase {

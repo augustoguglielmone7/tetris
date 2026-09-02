@@ -117,5 +117,23 @@ test('debe rotar la pieza activa cuando hay espacio disponible', () => {
         { row: 1, column: 2 },
         { row: 2, column: 2 }
     ]);
+    });
+    test('debe contar una línea cuando se completa y elimina', () => {
+    const game = new Tetris(10, 20);
+    const board = game.getBoard();
+
+    for (let column = 0; column < board.getWidth(); column++) {
+        if (column !== 1 && column !== 2) {
+            board.occupyCell({ row: 19, column });
+        }
+    }
+
+    (game as any).currentPiece = new PieceSquare();
+    (game as any).currentOffset = { row: 18, column: 1 };
+
+    game.tick();
+
+    expect(game.getLinesCleared()).toBe(1);
 });
+
 });
