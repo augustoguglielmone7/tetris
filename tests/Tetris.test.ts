@@ -66,5 +66,40 @@ describe('Tetris Test', () => {
         row: 1,
         column: 1
     });
+    
 }); 
+test('debe fijar la pieza en el tablero cuando no puede bajar', () => {
+    const game = new Tetris(10, 20);
+
+    (game as any).currentPiece = new PieceSquare();
+    (game as any).currentOffset = { row: 18, column: 1 };
+
+    game.tick();
+
+    expect(game.getBoard().isOccupied({
+        row: 18,
+        column: 1
+    })).toBe(true);
+
+    expect(game.getBoard().isOccupied({
+        row: 19,
+        column: 2
+    })).toBe(true);
+});
+test('debe crear una nueva pieza después de fijar la actual', () => {
+    const game = new Tetris(10, 20);
+    const currentPiece = new PieceSquare();
+
+    (game as any).currentPiece = currentPiece;
+    (game as any).currentOffset = { row: 18, column: 1 };
+
+    game.tick();
+
+    expect(game.getCurrentPiece()).not.toBe(currentPiece);
+
+    expect(game.getCurrentOffset()).toEqual({
+        row: 0,
+        column: 4
+    });
+});
 });
