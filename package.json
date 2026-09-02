@@ -7,8 +7,8 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "test": "vitest run"
+},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/augustoguglielmone7/tetris.git"
@@ -22,7 +22,6 @@
   "homepage": "https://github.com/augustoguglielmone7/tetris#readme",
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@vitest/coverage-v8": "^4.1.11",
     "vitest": "^4.1.11"
   }
 }

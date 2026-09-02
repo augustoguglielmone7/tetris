@@ -69,3 +69,5 @@ export class PieceGenerator {
         }
     ).filter(_candidate => _candidate.columns.length > 0);
 }
+
+}
