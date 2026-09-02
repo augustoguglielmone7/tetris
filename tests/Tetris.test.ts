@@ -52,5 +52,19 @@ describe('Tetris Test', () => {
 
         (game as any).currentOffset = { row: 0, column: 8 };
         expect(game.moveRight()).toBe(false);
+        
     });
+   test('cada tick debe bajar la pieza activa una fila si puede', () => {
+    const game = new Tetris(10, 20);
+
+    (game as any).currentPiece = new PieceSquare();
+    (game as any).currentOffset = { row: 0, column: 1 };
+
+    game.tick();
+
+    expect(game.getCurrentOffset()).toEqual({
+        row: 1,
+        column: 1
+    });
+}); 
 });
