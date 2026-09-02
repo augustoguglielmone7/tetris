@@ -27,6 +27,18 @@ export class Board {
     public occupyCell(cell: Cell): void {
         this.occupiedCells.add(`${cell.row},${cell.column}`);
     }
+    public addPiece(cells: Cell[]): boolean {
+    const canAddPiece = cells.every(cell =>
+        this.isInsideBounds(cell) && !this.isOccupied(cell)
+    );
+
+    if (!canAddPiece) {
+        return false;
+    }
+
+    cells.forEach(cell => this.occupyCell(cell));
+    return true;
+}
 
     // Comprueba si una celda ya está ocupada
     public isOccupied(cell: Cell): boolean {
@@ -62,25 +74,25 @@ export class Board {
     }
 
     // Elimina todas las filas completas y baja las de arriba
-    public clearFullRows(): void {
-        const fullRows = new Set(
-            Array.from({ length: this.height }, (_, row) => row)
-                .filter(row => this.isRowFull(row))
-        );
+   public clearFullRows(): void {
+    const fullRows = new Set(
+        Array.from({ length: this.height }, (_, row) => row)
+            .filter(row => this.isRowFull(row))
+    );
 
-        const newOccupiedCells = new Set<string>();
+    const newOccupiedCells = new Set<string>();
 
-        this.getOccupiedCells()
-            .filter(cell => !fullRows.has(cell.row))
-            .forEach(cell => {
-                const clearedRowsBelow = Array.from(fullRows)
-                    .filter(fullRow => fullRow > cell.row).length;
+    this.getOccupiedCells()
+        .filter(cell => !fullRows.has(cell.row))
+        .forEach(cell => {
+            const rowsBelow = Array.from(fullRows)
+                .filter(fullRow => fullRow > cell.row).length;
 
-                newOccupiedCells.add(
-                    `${cell.row + clearedRowsBelow},${cell.column}`
-                );
-            });
+            newOccupiedCells.add(
+                `${cell.row + rowsBelow},${cell.column}`
+            );
+        });
 
-        this.occupiedCells = newOccupiedCells;
-    }
+    this.occupiedCells = newOccupiedCells;
+}
 }

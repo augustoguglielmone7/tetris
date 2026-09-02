@@ -35,6 +35,32 @@ describe("Board", () => {
         })).toBe(true);
     });
 
+    test("puede agregar una pieza completa", () => {
+        const board = new Board();
+        const piece = [
+            { row: 0, column: 0 },
+            { row: 0, column: 1 },
+            { row: 1, column: 0 },
+            { row: 1, column: 1 }
+        ];
+
+        expect(board.addPiece(piece)).toBe(true);
+        expect(board.getOccupiedCells()).toEqual(piece);
+    });
+
+    test("no agrega una pieza que se sale de los límites", () => {
+        const board = new Board();
+        const piece = [
+            { row: 0, column: 8 },
+            { row: 0, column: 9 },
+            { row: 1, column: 8 },
+            { row: 1, column: 10 }
+        ];
+
+        expect(board.addPiece(piece)).toBe(false);
+        expect(board.getOccupiedCells()).toEqual([]);
+    });
+
     test("una celda que no fue ocupada debe estar libre", () => {
         const board = new Board();
 
