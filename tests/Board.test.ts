@@ -35,6 +35,32 @@ describe("Board", () => {
         })).toBe(true);
     });
 
+    test("puede agregar una pieza completa", () => {
+        const board = new Board();
+        const piece = [
+            { row: 0, column: 0 },
+            { row: 0, column: 1 },
+            { row: 1, column: 0 },
+            { row: 1, column: 1 }
+        ];
+
+        expect(board.addPiece(piece)).toBe(true);
+        expect(board.getOccupiedCells()).toEqual(piece);
+    });
+
+    test("no agrega una pieza que se sale de los límites", () => {
+        const board = new Board();
+        const piece = [
+            { row: 0, column: 8 },
+            { row: 0, column: 9 },
+            { row: 1, column: 8 },
+            { row: 1, column: 10 }
+        ];
+
+        expect(board.addPiece(piece)).toBe(false);
+        expect(board.getOccupiedCells()).toEqual([]);
+    });
+
     test("una celda que no fue ocupada debe estar libre", () => {
         const board = new Board();
 
@@ -136,25 +162,39 @@ describe("Board", () => {
         test("las filas superiores deben bajar al eliminar una fila completa", () => {
         const board = new Board();
 
-        // Completar la fila 0
+        // Completar la fila inferior
         for (let column = 0; column < board.getWidth(); column++) {
             board.occupyCell({
-                row: 0,
+                row: board.getHeight() - 1,
                 column
             });
         }
 
         // Una celda en la fila de arriba
         board.occupyCell({
-            row: 1,
+            row: board.getHeight() - 2,
             column: 3
         });
 
         board.clearFullRows();
 
         expect(board.isOccupied({
-            row: 0,
+            row: board.getHeight() - 1,
             column: 3
         })).toBe(true);
+        
     });
+    test("debe informar cuántas filas completas elimina", () => {
+    const board = new Board(4, 4);
+
+    [2, 3].forEach(row => {
+        for (let column = 0; column < board.getWidth(); column++) {
+            board.occupyCell({ row, column });
+        }
+    });
+
+    const removedRows = board.clearFullRows();
+
+    expect(removedRows).toBe(2);
+});
 });

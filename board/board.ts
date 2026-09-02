@@ -27,6 +27,18 @@ export class Board {
     public occupyCell(cell: Cell): void {
         this.occupiedCells.add(`${cell.row},${cell.column}`);
     }
+    public addPiece(cells: Cell[]): boolean {
+    const canAddPiece = cells.every(cell =>
+        this.isInsideBounds(cell) && !this.isOccupied(cell)
+    );
+
+    if (!canAddPiece) {
+        return false;
+    }
+
+    cells.forEach(cell => this.occupyCell(cell));
+    return true;
+}
 
     // Comprueba si una celda ya está ocupada
     public isOccupied(cell: Cell): boolean {
@@ -57,40 +69,33 @@ export class Board {
     }
         // Comprueba si una fila está completa
     public isRowFull(row: number): boolean {
-        for (let column = 0; column < this.width; column++) {
-            if (!this.isOccupied({ row, column })) {
-                return false;
-            }
-        }
-
-        return true;
+        return Array.from({ length: this.width }, (_, column) => column)
+            .every(column => this.isOccupied({ row, column }));
     }
 
-    // Elimina todas las filas completas
-    public clearFullRows(): void {
+    // Elimina todas las filas completas y baja las de arriba
+   public clearFullRows(): number {
+    const fullRows = new Set(
+        Array.from({ length: this.height }, (_, row) => row)
+            .filter(row => this.isRowFull(row))
+            
+    );
+
     const newOccupiedCells = new Set<string>();
 
-    for (const cell of this.getOccupiedCells()) {
-        if (!this.isRowFull(cell.row)) {
-            newOccupiedCells.add(`${cell.row},${cell.column}`);
-        }
-    }
+    this.getOccupiedCells()
+        .filter(cell => !fullRows.has(cell.row))
+        .forEach(cell => {
+            const rowsBelow = Array.from(fullRows)
+                .filter(fullRow => fullRow > cell.row).length;
 
-    let rowsToDrop = 0;
-
-    for (let row = 0; row < this.height; row++) {
-        if (this.isRowFull(row)) {
-            rowsToDrop++;
-        } else if (rowsToDrop > 0) {
-            for (let column = 0; column < this.width; column++) {
-                if (newOccupiedCells.has(`${row},${column}`)) {
-                    newOccupiedCells.delete(`${row},${column}`);
-                    newOccupiedCells.add(`${row - rowsToDrop},${column}`);
-                }
-            }
-        }
-    }
+            newOccupiedCells.add(
+                `${cell.row + rowsBelow},${cell.column}`
+            );
+        });
 
     this.occupiedCells = newOccupiedCells;
+    return fullRows.size;
+
 }
 }
