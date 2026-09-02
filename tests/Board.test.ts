@@ -182,5 +182,19 @@ describe("Board", () => {
             row: board.getHeight() - 1,
             column: 3
         })).toBe(true);
+        
     });
+    test("debe informar cuántas filas completas elimina", () => {
+    const board = new Board(4, 4);
+
+    [2, 3].forEach(row => {
+        for (let column = 0; column < board.getWidth(); column++) {
+            board.occupyCell({ row, column });
+        }
+    });
+
+    const removedRows = board.clearFullRows();
+
+    expect(removedRows).toBe(2);
+});
 });

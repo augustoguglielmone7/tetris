@@ -74,10 +74,11 @@ export class Board {
     }
 
     // Elimina todas las filas completas y baja las de arriba
-   public clearFullRows(): void {
+   public clearFullRows(): number {
     const fullRows = new Set(
         Array.from({ length: this.height }, (_, row) => row)
             .filter(row => this.isRowFull(row))
+            
     );
 
     const newOccupiedCells = new Set<string>();
@@ -94,5 +95,7 @@ export class Board {
         });
 
     this.occupiedCells = newOccupiedCells;
+    return fullRows.size;
+
 }
 }
