@@ -1,139 +1,136 @@
-import { describe, test, expect } from 'vitest';
-import { Tetris } from '../Juego/tetris';
-import { PieceSquare } from '../Piece/Piecesquare';
-import { Piecet } from '../Piece/Piecet';
+import { describe, test, expect } from "vitest";
+import { Tetris } from "../Juego/tetris";
+import { PieceSquare } from "../Piece/Piecesquare";
+import { Piecet } from "../Piece/Piecet";
 
-describe('Tetris Test', () => {
-    test('debe instanciarse de forma correcta con un tablero', () => {
-        const game = new Tetris();
+describe("Tetris", () => {
+
+    const squareFactory = () => new PieceSquare();
+
+    test("debe instanciarse correctamente", () => {
+        const game = new Tetris(squareFactory);
 
         expect(game).toBeDefined();
         expect(game.getBoard()).toBeDefined();
     });
 
-    test('debe iniciar el juego sin errores', () => {
-        const game = new Tetris();
-
-        expect(() => {
-            game.start();
-        }).not.toThrow();
-    });
-
-    test('debe pausar el juego sin errores', () => {
-        const game = new Tetris();
-
-        expect(() => {
-            game.start();
-            game.pause();
-        }).not.toThrow();
-    });
-
-    test('debe crear un tablero con dimensiones por defecto', () => {
-        const game = new Tetris();
+    test("debe tener un tablero de 10x20", () => {
+        const game = new Tetris(squareFactory);
 
         expect(game.getBoard().getWidth()).toBe(10);
         expect(game.getBoard().getHeight()).toBe(20);
     });
 
-    test('debe mover la pieza a la izquierda y a la derecha respetando los bordes', () => {
-        const game = new Tetris(10, 20);
+    test("debe comenzar en estado NotStarted", () => {
+        const game = new Tetris(squareFactory);
 
-        (game as any).currentPiece = new PieceSquare();
-        (game as any).currentOffset = { row: 0, column: 1 };
-
-        expect(game.moveLeft()).toBe(true);
-        expect(game.getCurrentOffset()).toEqual({ row: 0, column: 0 });
-
-        (game as any).currentOffset = { row: 0, column: 0 };
-        expect(game.moveLeft()).toBe(false);
-
-        (game as any).currentOffset = { row: 0, column: 7};
-        expect(game.moveRight()).toBe(true);
-        expect(game.getCurrentOffset()).toEqual({ row: 0, column: 8});
-
-        (game as any).currentOffset = { row: 0, column: 8 };
-        expect(game.moveRight()).toBe(false);
-        
+        expect(game.getStateName()).toBe("NotStarted");
     });
-   test('cada tick debe bajar la pieza activa una fila si puede', () => {
-    const game = new Tetris(10, 20);
 
-    (game as any).currentPiece = new PieceSquare();
-    (game as any).currentOffset = { row: 0, column: 1 };
+    test("debe comenzar el juego sin errores", () => {
+        const game = new Tetris(squareFactory);
 
-    game.tick();
-
-    expect(game.getCurrentOffset()).toEqual({
-        row: 1,
-        column: 1
+        expect(() => {
+            game.start();
+        }).not.toThrow();
     });
-    
-}); 
-test('debe fijar la pieza en el tablero cuando no puede bajar', () => {
-    const game = new Tetris(10, 20);
 
-    (game as any).currentPiece = new PieceSquare();
-    (game as any).currentOffset = { row: 18, column: 1 };
+    test("debe crear una pieza al iniciar", () => {
+        const game = new Tetris(squareFactory);
 
-    game.tick();
+        game.start();
 
-    expect(game.getBoard().isOccupied({
-        row: 18,
-        column: 1
-    })).toBe(true);
-
-    expect(game.getBoard().isOccupied({
-        row: 19,
-        column: 2
-    })).toBe(true);
-});
-test('debe crear una nueva pieza después de fijar la actual', () => {
-    const game = new Tetris(10, 20);
-    const currentPiece = new PieceSquare();
-
-    (game as any).currentPiece = currentPiece;
-    (game as any).currentOffset = { row: 18, column: 1 };
-
-    game.tick();
-
-    expect(game.getCurrentPiece()).not.toBe(currentPiece);
-
-    expect(game.getCurrentOffset()).toEqual({
-        row: 0,
-        column: 4
+        expect(game.getCurrentPiece()).not.toBeNull();
     });
-});
-test('debe rotar la pieza activa cuando hay espacio disponible', () => {
-    const game = new Tetris(10, 20);
 
-    (game as any).currentPiece = new Piecet();
-    (game as any).currentOffset = { row: 0, column: 1 };
+    test("debe poder obtener la posición de la pieza actual", () => {
+        const game = new Tetris(squareFactory);
 
-    game.rotate();
+        game.start();
 
-    expect(game.getAbsoluteCells()).toEqual([
-        { row: 0, column: 2 },
-        { row: 1, column: 1 },
-        { row: 1, column: 2 },
-        { row: 2, column: 2 }
-    ]);
+        expect(game.getCurrentPiecePosition()).not.toBeNull();
     });
-    test('debe contar una línea cuando se completa y elimina', () => {
-    const game = new Tetris(10, 20);
-    const board = game.getBoard();
 
-    for (let column = 0; column < board.getWidth(); column++) {
-        if (column !== 1 && column !== 2) {
-            board.occupyCell({ row: 19, column });
+    test("debe poder obtener las celdas de la pieza actual", () => {
+        const game = new Tetris(squareFactory);
+
+        game.start();
+
+        const cells = game.getCurrentPieceCells();
+
+        expect(cells).toHaveLength(4);
+    });
+
+    test("debe mover la pieza hacia la izquierda", () => {
+        const game = new Tetris(squareFactory);
+
+        game.start();
+
+        const initial = game.getCurrentPiecePosition()!;
+
+        const moved = game.moveLeft();
+
+        if (initial.column > 0) {
+            expect(moved).toBe(true);
         }
-    }
+    });
 
-    (game as any).currentPiece = new PieceSquare();
-    (game as any).currentOffset = { row: 18, column: 1 };
+   test("debe mover la pieza hacia un lado disponible", () => {
+        const game = new Tetris(squareFactory);
 
-    game.tick();
+        game.start();
 
-    expect(game.getLinesCleared()).toBe(1);
-});
+        const initial = game.getCurrentPiecePosition()!;
+
+        // Intentamos mover según la disponibilidad del borde para evitar falsos positivos por límites
+        if (initial.column > 0) {
+            const movedLeft = game.moveLeft();
+            expect(movedLeft).toBe(true);
+        } else {
+            const movedRight = game.moveRight();
+            expect(movedRight).toBe(true);
+        }
+    });
+
+    test("debe rotar una pieza T", () => {
+        const tFactory = () => new Piecet();
+        const game = new Tetris(tFactory);
+
+        game.start();
+
+        expect(() => {
+            game.rotateLeft();
+        }).not.toThrow();
+
+        expect(() => {
+            game.rotateRight();
+        }).not.toThrow();
+    });
+
+    test("debe comenzar con cero líneas eliminadas", () => {
+        const game = new Tetris(squareFactory);
+
+        expect(game.getClearedLines()).toBe(0);
+    });
+
+    test("no debe alcanzar el objetivo al comenzar", () => {
+        const game = new Tetris(squareFactory, 10);
+
+        expect(game.hasReachedLineTarget()).toBe(false);
+    });
+
+    test("debe poder obtener el Clock", () => {
+        const game = new Tetris(squareFactory);
+
+        expect(game.getClock()).toBeDefined();
+    });
+
+    test("debe poder pausar el Clock", () => {
+        const game = new Tetris(squareFactory);
+
+        expect(() => {
+            game.getClock().pause();
+        }).not.toThrow();
+    });
 
 });

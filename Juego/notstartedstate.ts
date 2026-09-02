@@ -1,15 +1,20 @@
 import type { Tetris } from "./tetris";
-import type { ITetrisState, TetrisStateName } from "./interfaces/ITetrisState";
+import type { ITetrisState, TetrisStateName } from "../interfaces/ITetrisState";
 import type { PieceBase } from "../Piece/Piecebase";
-import { FinishedState } from "./FinishedState";
+import { FinishedState } from "./finishedstate";
+import { RunningState } from "./runningstate";
 
-export class RunningState implements ITetrisState {
-    public readonly name: TetrisStateName = "Running";
+export class NotStartedState implements ITetrisState {
+public readonly name: TetrisStateName = "NotStarted";
 
-    public start(tetris: Tetris): void {}
+ public start(tetris: Tetris): void {
+        tetris.setState(new RunningState());
+        tetris.trySpawnPiece(); // <-- Esto crea la primera pieza al arrancar
+        tetris.getClock().start();
+    }
 
     public tick(tetris: Tetris): void {
-        tetris.tickClock();
+        tetris.tick();
 
         const active = tetris.getCurrentPiece()!;
         const nextRow = active.position.row + 1;

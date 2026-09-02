@@ -1,6 +1,6 @@
 import { Board, type ActivePiece as BoardActivePiece, type Position } from "../board/board";
 import { ITetrisState, TetrisStateName } from "../interfaces/ITetrisState";
-import { NotStartedState } from "../Juego/Notstartstate";
+import { NotStartedState } from "./notstartedstate";
 import { Clock } from "./Clock";
 import { PieceGenerator, type PieceFactory } from "../Juego/piecegenerator";
 import { MathRandomSource, type RandomSource } from "../Juego/randomsource";
