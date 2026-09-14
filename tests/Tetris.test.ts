@@ -2,10 +2,14 @@ import { describe, test, expect } from "vitest";
 import { Tetris } from "../Juego/tetris";
 import { PieceSquare } from "../Piece/Piecesquare";
 import { Piecet } from "../Piece/Piecet";
+import type { RandomSource } from "../Juego/randomsource";
 
 describe("Tetris", () => {
 
     const squareFactory = () => new PieceSquare();
+    const fixedRandom: RandomSource = {
+        nextInt: () => 0
+    };
 
     test("debe instanciarse correctamente", () => {
         const game = new Tetris(squareFactory);
@@ -61,18 +65,13 @@ describe("Tetris", () => {
         expect(cells).toHaveLength(4);
     });
 
-    test("debe mover la pieza hacia la izquierda", () => {
-        const game = new Tetris(squareFactory);
+    test("debe mover la pieza hacia la derecha", () => {
+        const game = new Tetris(squareFactory, Infinity, fixedRandom);
 
         game.start();
+        game.getClock().pause();
 
-        const initial = game.getCurrentPiecePosition()!;
-
-        const moved = game.moveLeft();
-
-        if (initial.column > 0) {
-            expect(moved).toBe(true);
-        }
+        expect(game.moveRight()).toBe(true);
     });
 
    test("debe mover la pieza hacia un lado disponible", () => {
@@ -82,14 +81,11 @@ describe("Tetris", () => {
 
         const initial = game.getCurrentPiecePosition()!;
 
-        // Intentamos mover según la disponibilidad del borde para evitar falsos positivos por límites
-        if (initial.column > 0) {
-            const movedLeft = game.moveLeft();
-            expect(movedLeft).toBe(true);
-        } else {
-            const movedRight = game.moveRight();
-            expect(movedRight).toBe(true);
-        }
+        const moved = initial.column > 0
+            ? game.moveLeft()
+            : game.moveRight();
+
+        expect(moved).toBe(true);
     });
 
     test("debe rotar una pieza T", () => {
@@ -132,5 +128,21 @@ describe("Tetris", () => {
             game.getClock().pause();
         }).not.toThrow();
     });
+    test("debe terminar al alcanzar el objetivo de líneas", () => {
+    const game = new Tetris(squareFactory, 1, fixedRandom);
+    
+    for (let column = 2; column < 10; column++) {
+        game.getBoard().occupyCell({ row: 19, column });
+    }
+    game.start();
+    game.getClock().pause();
+
+    for (let tick = 0; tick < 19; tick++) {
+        game.tick();
+    }
+
+    expect(game.getClearedLines()).toBe(1);
+    expect(game.getStateName()).toBe("Finished");
+});
 
 });
