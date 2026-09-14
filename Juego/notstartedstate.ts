@@ -8,31 +8,16 @@ export class NotStartedState implements ITetrisState {
 public readonly name: TetrisStateName = "NotStarted";
 
  public start(tetris: Tetris): void {
-    tetris.setState(new RunningState());
+        tetris.setState(new RunningState());
 
-    const spawned = tetris.trySpawnPiece();
+        const spawned = tetris.trySpawnPiece(); 
 
-    spawned
-        ? tetris.getClock().start()
-        : tetris.setState(new FinishedState());
-}
-
-    public tick(tetris: Tetris): void {
-        tetris.tick();
-
-        const active = tetris.getCurrentPiece()!;
-        const nextRow = active.position.row + 1;
-        const canMoveDown = tetris.getBoard().canPlacePiece(
-            active.piece.getCells(),
-            nextRow,
-            active.position.column
-        );
-
-        canMoveDown
-            ? tetris.setCurrentPiece({ piece: active.piece, position: { row: nextRow, column: active.position.column } })
-            : this.lockAndSpawnNext(tetris);
+        spawned
+            ? tetris.getClock().start()
+            : tetris.setState(new FinishedState());
     }
 
+    public tick(tetris: Tetris): void {}
     public moveLeft(tetris: Tetris): boolean {
         return this.tryMove(tetris, -1);
     }
@@ -47,15 +32,6 @@ public readonly name: TetrisStateName = "NotStarted";
 
     public rotateRight(tetris: Tetris): boolean {
         return this.tryRotate(tetris, piece => piece.rotateRight(), piece => piece.rotateLeft());
-    }
-
-    private lockAndSpawnNext(tetris: Tetris): void {
-        tetris.lockCurrentPiece();
-
-        const reachedTarget = tetris.hasReachedLineTarget();
-        const spawned = !reachedTarget && tetris.trySpawnPiece();
-
-        spawned || tetris.setState(new FinishedState());
     }
 
     private tryMove(tetris: Tetris, deltaColumn: number): boolean {
