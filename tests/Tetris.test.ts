@@ -144,5 +144,23 @@ describe("Tetris", () => {
     expect(game.getClearedLines()).toBe(1);
     expect(game.getStateName()).toBe("Finished");
 });
+test("debe terminar en Finished por game over al no poder spawnear la siguiente pieza", () => {
+    const game = new Tetris(squareFactory, Infinity, fixedRandom);
+    game.start();            
+    game.getClock().pause();
 
+   
+    for (let column = 2; column <= 8; column++) {
+        game.getBoard().occupyCell({ row: 0, column });
+        game.getBoard().occupyCell({ row: 1, column });
+    }
+
+    game.getBoard().occupyCell({ row: 2, column: 0 });
+    game.getBoard().occupyCell({ row: 2, column: 1 });
+
+    game.tick(); 
+
+    expect(game.getCurrentPiece()).toBeNull();
+    expect(game.getStateName()).toBe("Finished");
+});
 });

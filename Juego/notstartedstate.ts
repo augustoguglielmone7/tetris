@@ -8,10 +8,14 @@ export class NotStartedState implements ITetrisState {
 public readonly name: TetrisStateName = "NotStarted";
 
  public start(tetris: Tetris): void {
-        tetris.setState(new RunningState());
-        tetris.trySpawnPiece(); // <-- Esto crea la primera pieza al arrancar
-        tetris.getClock().start();
-    }
+    tetris.setState(new RunningState());
+
+    const spawned = tetris.trySpawnPiece();
+
+    spawned
+        ? tetris.getClock().start()
+        : tetris.setState(new FinishedState());
+}
 
     public tick(tetris: Tetris): void {
         tetris.tick();
