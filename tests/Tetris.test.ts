@@ -160,7 +160,72 @@ test("debe terminar en Finished por game over al no poder spawnear la siguiente 
 
     game.tick(); 
 
+       expect(game.getCurrentPiece()).toBeNull();
+    expect(game.getStateName()).toBe("Finished");
+});
+
+test("debe terminar en Finished si no hay lugar para la pieza inicial al arrancar", () => {
+    const game = new Tetris(squareFactory, Infinity, fixedRandom);
+
+    for (let column = 0; column < 10; column++) {
+        game.getBoard().occupyCell({ row: 0, column });
+        game.getBoard().occupyCell({ row: 1, column });
+    }
+
+    game.start();
+
     expect(game.getCurrentPiece()).toBeNull();
     expect(game.getStateName()).toBe("Finished");
 });
+
+test("no debe lanzar un error al llamar tick() antes de start()", () => {
+    const game = new Tetris(squareFactory);
+
+    expect(() => {
+        game.tick();
+    }).not.toThrow();
+
+    expect(game.getStateName()).toBe("NotStarted");
+});
+
+describe("cuando el juego ya terminó (Finished)", () => {
+
+    function buildFinishedGame(): Tetris {
+        const game = new Tetris(squareFactory, Infinity, fixedRandom);
+
+        for (let column = 0; column < 10; column++) {
+            game.getBoard().occupyCell({ row: 0, column });
+            game.getBoard().occupyCell({ row: 1, column });
+        }
+
+        game.start();
+
+        return game;
+    }
+
+    test("no debe hacer nada al llamar tick()", () => {
+        const game = buildFinishedGame();
+
+        expect(() => {
+            game.tick();
+        }).not.toThrow();
+
+        expect(game.getStateName()).toBe("Finished");
+    });
+
+    test("moveLeft y moveRight deben devolver false", () => {
+        const game = buildFinishedGame();
+
+        expect(game.moveLeft()).toBe(false);
+        expect(game.moveRight()).toBe(false);
+    });
+
+    test("rotateLeft y rotateRight deben devolver false", () => {
+        const game = buildFinishedGame();
+
+        expect(game.rotateLeft()).toBe(false);
+        expect(game.rotateRight()).toBe(false);
+    });
+});
+
 });
